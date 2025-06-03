@@ -82,7 +82,7 @@ class EventDB:
         with self.conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO events (timestamp, description, video_id, video_filename, embedding, llm_summary)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s::vector, %s)
                 RETURNING id;
             """, (timestamp, description, video_id, video_filename, embedding, llm_summary))
             
@@ -203,4 +203,59 @@ class EventDB:
     def close(self):
         """Close the database connection."""
         self.conn.close()
-        self.logger.info("Database connection closed") 
+        self.logger.info("Database connection closed")
+
+    def search_events(self, query, limit=5):
+        """
+        Search events using semantic similarity.
+        
+        Parameters:
+            query (str): The search query
+            limit (int): Maximum number of results to return
+            
+        Returns:
+            list: List of matching event dictionaries with similarity scores
+        """
+        # Generate embedding for the query
+        query_embedding = self._get_embedding(query)
+        
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT 
+                    id, 
+                    timestamp, 
+                    description, 
+                    video_id, 
+                    video_filename, 
+                    llm_summary,
+                    1 - (embedding <=> %s::vector) as similarity
+                FROM events
+                ORDER BY embedding <=> %s::vector
+                LIMIT %s;
+            """, (query_embedding, query_embedding, limit))
+            
+            events = []
+            for row in cur.fetchall():
+                events.append({
+                    'id': row[0],
+                    'timestamp': row[1],
+                    'description': row[2],
+                    'video_id': row[3],
+                    'video_filename': row[4],
+                    'llm_summary': row[5],
+                    'similarity': float(row[6])
+                })
+            self.logger.info(f"Found {len(events)} events matching query")
+            return events
+
+    def reset_database(self):
+        """Drop and recreate all tables."""
+        with self.conn.cursor() as cur:
+            # Drop existing tables
+            cur.execute("DROP TABLE IF EXISTS events;")
+            self.conn.commit()
+            self.logger.info("Dropped existing tables")
+            
+            # Recreate tables
+            self._create_tables()
+            self.logger.info("Recreated tables") 

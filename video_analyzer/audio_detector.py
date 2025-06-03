@@ -5,6 +5,9 @@ from typing import List, Dict
 from moviepy import VideoFileClip
 from torch_vggish_yamnet import yamnet
 from torch_vggish_yamnet.input_proc import WaveformToInput
+import os
+from pathlib import Path
+from config import OUTPUT_DIR
 
 
 class AudioDetector:
@@ -40,27 +43,35 @@ class AudioDetector:
         Returns:
             List[str]: List of class names.
         """
-
-        with open('resources/yamnet_class_map.csv', 'r', encoding='utf-8') as f:
+        # Get project root directory
+        project_root = Path(__file__).parent.parent
+        class_map_path = project_root / "resources" / "yamnet_class_map.csv"
+        
+        with open(class_map_path, 'r', encoding='utf-8') as f:
             lines = f.read().strip().split('\n')[1:]  # Skip header
         class_names = [line.split(',')[2] for line in lines]
         return class_names
 
-    def extract_audio(self, video_path, output_wav="output/audio.wav"):
+    def extract_audio(self, video_path, output_wav="audio.wav"):
         """
         Extracts audio track from video file and saves as WAV.
 
         Parameters:
             video_path (str): Path to the input video file.
-            output_wav (str): Path for output WAV file (default "output/audio.wav").
+            output_wav (str): Name of output WAV file (default "audio.wav").
 
         Returns:
             str: Path to the extracted audio WAV file.
         """
+        # Use the configured output directory
+        output_path = OUTPUT_DIR / output_wav
+        
+        # Create output directory if it doesn't exist
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
         video = VideoFileClip(video_path)
-        video.audio.write_audiofile(output_wav, fps=16000, logger=None)
-        return output_wav
+        video.audio.write_audiofile(str(output_path), fps=16000, logger=None)
+        return str(output_path)
 
     def detect_sound_events(self, audio_path, top_k=3, threshold=0.5):
         """

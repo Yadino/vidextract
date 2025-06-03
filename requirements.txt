@@ -12,4 +12,8 @@ psycopg2-binary
 torch-vggish-yamnet
 opencv-python
 numpy
-git+https://github.com/kkroening/ffmpeg-python.git 
+git+https://github.com/kkroening/ffmpeg-python.git
+fastapi>=0.68.0
+uvicorn>=0.15.0
+pydantic>=1.8.0
+python-multipart>=0.0.5 

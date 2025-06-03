@@ -12,13 +12,14 @@ services:
       - ./sample vids:/app/sample_vids  # Mount sample videos
       - ./models:/app/models  # Mount models directory
       - ./resources:/app/resources  # Mount resources directory
+      - ./logs:/app/logs  # Persist logs to the host
     depends_on:
       - postgres
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/vidextract
 
   postgres:
-    image: pgvector/pgvector:pg16
+    image: ankane/pgvector:latest
     container_name: vidextract-postgres
     environment:
       - POSTGRES_USER=postgres
