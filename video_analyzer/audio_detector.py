@@ -70,7 +70,11 @@ class AudioDetector:
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         video = VideoFileClip(video_path)
-        video.audio.write_audiofile(str(output_path), fps=16000, logger=None)
+        try:
+            video.audio.write_audiofile(str(output_path), fps=16000, logger=None)
+        finally:
+            video.close() # Explicitly close the video clip to release the file handle
+            
         return str(output_path)
 
     def detect_sound_events(self, audio_path, top_k=3, threshold=0.5):

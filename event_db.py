@@ -34,7 +34,7 @@ class EventDB:
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS events (
                     id SERIAL PRIMARY KEY,
-                    timestamp TIMESTAMP NOT NULL,
+                    timestamp DOUBLE PRECISION NOT NULL,
                     description TEXT NOT NULL,
                     video_id TEXT NOT NULL,
                     video_filename TEXT NOT NULL,
@@ -80,6 +80,7 @@ class EventDB:
         embedding = self._get_embedding(description)
         
         with self.conn.cursor() as cur:
+            self.logger.debug(f"save_event: Received timestamp={timestamp} (type={type(timestamp)})")
             cur.execute("""
                 INSERT INTO events (timestamp, description, video_id, video_filename, embedding, llm_summary)
                 VALUES (%s, %s, %s, %s, %s::vector, %s)
@@ -118,12 +119,13 @@ class EventDB:
                     self.logger.warning(f"Moment {i} is missing required fields: {missing_fields}, skipping")
                     continue
                 
-                # Convert start_time to datetime
-                timestamp = datetime.fromtimestamp(moment["start_time"])
+                # Use start_time directly as seconds (float)
+                timestamp_seconds = float(moment["start_time"])
+                self.logger.debug(f"Processing moment {i}: start_time={moment['start_time']} (type={type(moment['start_time'])}) -> timestamp_seconds={timestamp_seconds}")
                 
                 # Save event
                 event_id = self.save_event(
-                    timestamp=timestamp,
+                    timestamp=timestamp_seconds,
                     description=moment["description"],
                     video_id=video_id,
                     video_filename=video_filename,
@@ -131,8 +133,13 @@ class EventDB:
                 )
                 saved_ids.append(event_id)
                 
+            except (ValueError, TypeError) as e:
+                # Catch errors related to timestamp conversion
+                self.logger.error(f"Timestamp conversion error for moment {i}: {e}", exc_info=True)
+                continue
             except Exception as e:
-                self.logger.error(f"Error processing moment {i}: {str(e)}", exc_info=True)
+                # Catch any other general exceptions during saving
+                self.logger.error(f"Error saving moment {i}: {e}", exc_info=True)
                 continue
             
         self.logger.info(f"Saved {len(saved_ids)} events to database for video {video_filename}")

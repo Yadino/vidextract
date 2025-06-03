@@ -18,42 +18,42 @@ class SceneDetector:
         Returns:
             List[float]: List of timestamps (in seconds) where scene changes are detected.
         """
+        cap = None
+        try:
+            cap = cv2.VideoCapture(video_path)
 
-        cap = cv2.VideoCapture(video_path)
+            # Get FPS 
+            fps = cap.get(cv2.CAP_PROP_FPS)
 
-        # Get FPS 
-        fps = cap.get(cv2.CAP_PROP_FPS)
+            prev_frame = None  # Previous frame (grayscale)
+            scenes = []  # List of scene change timestamps
+            timestamp = 0
 
-        prev_frame = None  # Previous frame (grayscale)
-        scenes = []  # List of scene change timestamps
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
 
-        timestamp = 0
+                # Convert to grayscale
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Continue until video ends or reading fails
-        while cap.isOpened():  
-            ret, frame = cap.read()  # Read next frame
-            if not ret:  # If reading fails (e.g., end of video), exit loop
-                break
+                if prev_frame is not None:
+                    # Calculate difference
+                    diff = cv2.absdiff(gray, prev_frame)
+                    avg_diff = diff.mean()
 
-            # Process every frame_skip-th frame
-            if int(cap.get(cv2.CAP_PROP_POS_FRAMES)) % frame_skip == 0:
-                
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
-                
-                if prev_frame is not None:  # If not the first frame
-                    diff = cv2.absdiff(prev_frame, gray)  # Absolute difference between current and previous frame
-                    score = diff.mean()  # Mean pixel intensity difference
-
-                    if score > diff_threshold:
+                    if avg_diff > diff_threshold:
                         scenes.append(timestamp)
 
-                prev_frame = gray  # Update previous frame
-                timestamp = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0  # Current timestamp in seconds
+                prev_frame = gray
+                timestamp += frame_skip / fps
+                cap.set(cv2.CAP_PROP_POS_FRAMES, int(timestamp * fps))
 
-        cap.release()  # Release video file
-        return(self.frames_by_seconds(video_path, scences))
-        
-       
+            return scenes
+        finally:
+            if cap is not None:
+                cap.release()
+
     def extract_scenes_smart(self, video_path):
         """
         Use scenedetect's ContentDetector to extract changing shots.
@@ -83,17 +83,21 @@ class SceneDetector:
         Returns:
             List[Tuple[float, np.ndarray]]: (timestamp, frame) pairs.
         """
-        cap = cv2.VideoCapture(video_path)
-        frames = []
+        cap = None
+        try:
+            cap = cv2.VideoCapture(video_path)
+            frames = []
 
-        for t in seconds:
-            cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
-            ret, frame = cap.read()
-            if ret:
-                frames.append((t, frame))
+            for t in seconds:
+                cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
+                ret, frame = cap.read()
+                if ret:
+                    frames.append((t, frame))
 
-        cap.release()
-        return frames
+            return frames
+        finally:
+            if cap is not None:
+                cap.release()
 
     def save_frames(self, video_path, frames, output_root="output"):
         """

@@ -20,7 +20,6 @@ PROMPT_TEMPLATE = (
     '}}\n\n'
     "You may approximate the start and end time to the best of your judgement.\n"
     "You may also use your best judgement to decide which moments are important, the video's title may or may not be helpful to decide that.\n"
-    "However, keep the events you deem important relevant and not too numerous.\n"
     "Use ONLY JSON format for the output.\n"
     "DO NOT deliver partial output or digress in any way from the provided JSON format.\n\n"
     "Example output:\n\n"

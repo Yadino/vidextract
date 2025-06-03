@@ -54,7 +54,12 @@ async def chat(request: ChatRequest, db: EventDB = Depends(get_db)):
         HTTPException: If there's an error during the search
     """
     try:
-        events = db.search_events(request.query, request.limit)
+        if request.query == '__GET_ALL_EVENTS__':
+            # If query is the special marker, get all events by filename
+            events = db.get_events_by_filename(request.video_filename)
+        else:
+            # Otherwise, perform a semantic search
+            events = db.search_events(request.query, request.limit)
         return ChatResponse(
             events=[Event(**event) for event in events],
             total_results=len(events)

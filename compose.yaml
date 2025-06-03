@@ -17,6 +17,20 @@ services:
       - postgres
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/vidextract
+    ports:
+      - "8000:8000" # Expose backend port
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: vidextract-client
+    ports:
+      - "3000:80" # Map host port 3000 to container port 80 (Nginx)
+    depends_on:
+      - python-video_analyzer # Client depends on backend being ready
+    environment:
+      - VITE_API_BASE_URL=http://python-video_analyzer:8000 # Point client to backend service
 
   postgres:
     image: ankane/pgvector:latest

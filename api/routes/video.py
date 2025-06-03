@@ -49,6 +49,7 @@ async def upload_video(
     Returns:
         dict: Processing results
     """
+    temp_path = None
     try:
         logger.info(f"Received upload request for file: {file.filename}")
         
@@ -78,9 +79,6 @@ async def upload_video(
         logger.info("Saving events to database")
         saved_ids = db.save_llm_analysis(llm_analysis, file.filename)
         
-        # Clean up temporary file
-        os.remove(temp_path)
-        
         return {
             "message": "File processed successfully",
             "filename": file.filename,
@@ -91,6 +89,14 @@ async def upload_video(
     except Exception as e:
         logger.error(f"Error in upload_video: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        # Clean up temporary file
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+                logger.info(f"Cleaned up temporary file: {temp_path}")
+            except Exception as e:
+                logger.error(f"Error cleaning up temporary file: {str(e)}", exc_info=True)
 
 @router.get("/events/{video_filename}", response_model=List[Event])
 async def get_video_events(

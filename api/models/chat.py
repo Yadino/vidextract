@@ -17,20 +17,20 @@ class Event(BaseModel):
     
     Attributes:
         id: Unique identifier for the event
-        timestamp: When the event occurred
+        timestamp: Timestamp of the event in seconds (float)
         description: Text description of the event
         video_id: ID of the source video
         video_filename: Original filename of the video
         llm_summary: Optional additional summary from LLM
-        similarity: Cosine similarity score for search results
+        similarity: Cosine similarity score for search results, optional when retrieving all events
     """
     id: int
-    timestamp: datetime
+    timestamp: float
     description: str
     video_id: str
     video_filename: str
     llm_summary: Optional[str] = None
-    similarity: float
+    similarity: Optional[float] = None
 
 class ChatRequest(BaseModel):
     """
@@ -39,9 +39,11 @@ class ChatRequest(BaseModel):
     Attributes:
         query: The natural language query from the user
         limit: Optional maximum number of results to return (default: 5)
+        video_filename: The filename of the video the chat is about
     """
     query: str
     limit: Optional[int] = 5
+    video_filename: str
 
 class ChatResponse(BaseModel):
     """

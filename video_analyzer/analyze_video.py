@@ -41,7 +41,13 @@ class AnalyzeVideo:
     def process_video(self, video_path):
         # 1. Extract frames from scenes
         frames_info = self.scene_detector.extract_scenes_smart(video_path)
-        frame_times, frames = map(list, zip(*frames_info))
+        
+        # Handle case where no frames are extracted (e.g., very short video with no scene changes)
+        if not frames_info:
+            frame_times = []
+            frames = []
+        else:
+            frame_times, frames = map(list, zip(*frames_info))
         
         # 2. Process frames for object detection and captions
         object_labels = self.object_detector.detect_objects_from_frames(frames)
