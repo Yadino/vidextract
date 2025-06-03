@@ -1,0 +1,79 @@
+# Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+
+# IDE and editor folders/files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Version control
+.git/
+.gitignore
+.svn/
+.hg/
+
+# Build and distribution outputs
+dist/
+build/
+out/
+
+# Test and debug artifacts
+test/
+tests/
+*_test.go
+debug/
+*.log
+
+# Environment and secrets
+.env*
+*.env
+*.pem
+*.key
+*.crt
+config.local.*
+*.local.yml
+
+# Documentation and markdown
+README*
+*.md
+docs/
+
+# Docker and compose files
+Dockerfile*
+docker-compose*
+
+# Temporary and local files
+tmp/
+temp/
+*.tmp
+.local/
+local/
+
+# Project-specific: Large media and output files
+output/
+sample vids/
+
+# Project-specific: Model weights (if not needed in container)
+models/*.pt
+
+# Project-specific: Old scripts and backup files
+old/
+
+# Miscellaneous
+*.bak
+*.old
+
+# Exclude resource files if not needed
+# resources/
+
+# Exclude CSVs and other data files if not needed
+# *.csv
+# *.json
+
+# End of .dockerignore

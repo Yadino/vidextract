@@ -1,0 +1,38 @@
+services:
+  python-video_analyzer:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: video_analyzer
+    restart: unless-stopped
+    init: true
+    # env_file: ./.env  # Uncomment if .env file exists in the project root
+    volumes:
+      - ./output:/app/output  # Persist output files to the host for easy access
+      - ./sample vids:/app/sample_vids  # Mount sample videos
+      - ./models:/app/models  # Mount models directory
+      - ./resources:/app/resources  # Mount resources directory
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/vidextract
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: vidextract-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1
+      - POSTGRES_DB=vidextract
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+
+# No external services (databases, caches, etc.) detected in the project structure or Dockerfile.
+# If you add a database or other service, add it here and update depends_on above.
+
+# No networks section needed as there is only one service and no inter-service communication.

@@ -1,0 +1,61 @@
+I have this analysis of a video in JSON format which includes:
+
+A description of detected objected in each shot.
+
+A description of a still from each shot (in caption, unless caption is null).
+
+A description of sound events extracted from each second of the video.
+
+A transcript of the English speech spoken in the video. 
+	
+
+You need to:
+Select important moments in the video (e.g., explosions, people speaking, vehicle movement).
+Generate detailed descriptions for each moment.
+Return the results in a JSON format like so
+
+{
+moments:
+[
+	{
+		shot_numbers: [],
+		start_time,
+		end_time,
+		description,
+	}
+]
+}
+
+
+You may approximate the start and end time to the best of you judgement. 
+You may also use your best judgement to decide which moments are important, the video's title may or may not be helpful to decide that.
+However, keep the events you deem important relevant and not too numerous.
+Use ONLY JSON format for the output.
+DO NOT deliver partial output or digress in any way from the provided JSON format.
+
+Example output:
+
+{
+  "moments": [
+    {
+      "shot_numbers": [0],
+      "start_time": 0,
+      "end_time": 8,
+      "description": "A wedding photoshoot is in progress with people speaking in the background. The setting includes benches and potted plants, likely in an outdoor or public location."
+    },
+    {
+      "shot_numbers": [1],
+      "start_time": 14.5,
+      "end_time": 15.5,
+      "description": "A large explosion occurs, disrupting the scene. This is likely the Beirut explosion as referenced in the title."
+    }
+  ]
+}
+
+END OF EXAMPLE
+
+
+
+Here is the video analysis:
+
+<json>

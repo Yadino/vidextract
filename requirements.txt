@@ -1,0 +1,15 @@
+torch
+torchvision
+torchaudio
+openai
+ultralytics
+transformers
+moviepy
+openai-whisper
+librosa
+scenedetect
+psycopg2-binary
+torch-vggish-yamnet
+opencv-python
+numpy
+git+https://github.com/kkroening/ffmpeg-python.git 
