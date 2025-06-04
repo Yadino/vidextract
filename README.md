@@ -83,3 +83,4 @@ The application can be easily deployed using Docker Compose, which sets up the c
 
 3.  **Access the application:** Once the containers are running, open your web browser and go to `http://localhost:3000`. You should see the client application.
 
+NOTE: The first analysis run may take a few minutes as models and weights are being downloaded.
