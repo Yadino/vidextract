@@ -44,9 +44,6 @@ README*
 *.md
 docs/
 
-# Docker and compose files
-Dockerfile*
-docker-compose*
 
 # Temporary and local files
 tmp/

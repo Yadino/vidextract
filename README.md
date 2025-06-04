@@ -11,9 +11,7 @@ VidExtract is a full-stack application that allows users to upload videos and ex
   - Video analysis and scene description (using GPT models)
   - Semantic search capabilities (using OpenAI embeddings)
 
-## Configuration
-
-### OpenAI API Key
+## OpenAI API Key Configuration
 
 The application requires a valid OpenAI API key to function. You can configure it in one of two ways:
 
@@ -29,21 +27,6 @@ The application requires a valid OpenAI API key to function. You can configure i
    ```python
    OPENAI_API_KEY = 'your-api-key-here'
    ```
-
-### Database Configuration
-
-The application uses PostgreSQL with the pgvector extension for storing and searching video events. The database is automatically configured in the Docker setup with these default credentials:
-
-- Database: `vidextract`
-- Username: `postgres`
-- Password: `postgres`
-- Port: `5432`
-
-These credentials are set in the `compose.yaml` file. If you need to change them, update both the `postgres` service environment variables and the `DATABASE_URL` in the `python-video_analyzer` service.
-
-## First Run
-
-**Note:** The first time you analyze a video, the process may take a few minutes longer than usual. This is because the application needs to download and initialize various AI models and their weights. Subsequent runs will be faster as the models will be cached.
 
 ## Project Structure
 
