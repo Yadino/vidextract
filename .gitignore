@@ -54,7 +54,6 @@ local/
 
 # Project-specific: Large media and output files
 output/
-sample vids/
 
 # Project-specific: Model weights
 #models/*.pt
