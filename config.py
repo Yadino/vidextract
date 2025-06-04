@@ -16,9 +16,7 @@ OPENAI_MODEL = "gpt-4o-mini"  # The model to use for analysis
 OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"  # The model to use for embeddings
 
 # Database Configuration
-#POSTGRES_URL = os.getenv("DATABASE_URL", "postgresql://postgres:1@localhost:5432/vidextract")
-POSTGRES_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/vidextract")
-
+POSTGRES_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@postgres:5432/vidextract")
 
 # Create output directory if it doesn't exist
 OUTPUT_DIR.mkdir(exist_ok=True) 

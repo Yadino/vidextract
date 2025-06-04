@@ -4,9 +4,50 @@
 
 VidExtract is a full-stack application that allows users to upload videos and extract meaningful descriptions of their visual and audio content using various AI models. The extracted information is stored in a searchable database, enabling users to chat with an AI assistant to retrieve relevant moments from the video.
 
+## Prerequisites
+
+- Docker Desktop (or Docker Engine and Docker Compose) installed on your system.
+- A valid OpenAI API key for:
+  - Video analysis and scene description (using GPT models)
+  - Semantic search capabilities (using OpenAI embeddings)
+
+## Configuration
+
+### OpenAI API Key
+
+The application requires a valid OpenAI API key to function. You can configure it in one of two ways:
+
+1. **Environment Variable (Recommended for Docker):**
+   Add the API key to your environment variables before running the containers:
+   ```bash
+   export OPENAI_API_KEY='your-api-key-here'
+   docker compose up
+   ```
+
+2. **Configuration File:**
+   Modify `config.py` in the project root:
+   ```python
+   OPENAI_API_KEY = 'your-api-key-here'
+   ```
+
+### Database Configuration
+
+The application uses PostgreSQL with the pgvector extension for storing and searching video events. The database is automatically configured in the Docker setup with these default credentials:
+
+- Database: `vidextract`
+- Username: `postgres`
+- Password: `postgres`
+- Port: `5432`
+
+These credentials are set in the `compose.yaml` file. If you need to change them, update both the `postgres` service environment variables and the `DATABASE_URL` in the `python-video_analyzer` service.
+
+## First Run
+
+**Note:** The first time you analyze a video, the process may take a few minutes longer than usual. This is because the application needs to download and initialize various AI models and their weights. Subsequent runs will be faster as the models will be cached.
+
 ## Project Structure
 
-The project is organized into three main components:
+The project is organized into three main components as an MVC design:
 
 ### 1. Video Analyzer (`video_analyzer` directory)
 
@@ -20,7 +61,7 @@ This is the core processing unit responsible for analyzing the uploaded videos. 
   - **OpenAI Whisper:** Transcribes spoken English language from the audio track into text.
   - **YAMNET:** Detects various sound events and effects present in the audio.
 
-The video analyzer processes the video, combines the insights from these models, and generates structured information about key moments, including timestamps and descriptions. This information is then passed to the API for storage.
+The video analyzer processes the video, combines the insights from these models, and generates structured information about key moments using the OpenAI API. This information is then stored in a PostgreSQL database.
 
 ### 2. API (`api` directory)
 
@@ -37,16 +78,12 @@ The API serves as the backend of the application. It is built using FastAPI and 
 The client is a single-page application built with React and TypeScript, using Material UI for the user interface. It provides the user interface for:
 
 - Uploading videos via a drag-and-drop interface.
-- Displaying the status of video analysis (uploading, analyzing, saving).
 - Providing a chat interface to interact with the AI assistant and retrieve video highlights based on queries or display all extracted moments.
 
 ## Deployment with Docker Compose
 
 The application can be easily deployed using Docker Compose, which sets up the client, API, and database services in separate containers.
 
-**Prerequisites:**
-
-- Docker Desktop (or Docker Engine and Docker Compose) installed on your system.
 
 **Instructions:**
 
@@ -59,14 +96,7 @@ The application can be easily deployed using Docker Compose, which sets up the c
     ```
 
     -   `docker compose up`: Starts the services defined in `compose.yaml`.
-    -   `--build`: Builds the Docker images before starting the containers (useful for the first run or after code changes).
+    -   `--build`: Builds the Docker images before starting the containers (useful for the first run).
 
 3.  **Access the application:** Once the containers are running, open your web browser and go to `http://localhost:3000`. You should see the client application.
 
-4.  **Stopping the application:** To stop the running containers, press `Ctrl+C` in the terminal where `docker compose up` is running. To stop and remove the containers, networks, and volumes, run:
-
-    ```bash
-    docker compose down
-    ```
-
-This setup provides a convenient and isolated environment to run the VidExtract application.

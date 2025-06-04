@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { sendMessage } from '../services/api';
 import { useSnackbar } from 'notistack';
-import { styled } from '@mui/material/styles';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -77,10 +76,6 @@ const Chat = ({ videoFilename }: ChatProps) => {
         } else if (response.events.length === 0) {
             introPhrase = `Sorry, I couldn't find any relevant moments for that query.`;
         }
-
-        const finalAssistantMessage = response.events.length > 0
-          ? `${introPhrase}\n\n${eventDescriptions}`
-          : introPhrase;
 
         setMessages((prevMessages) => [
           ...prevMessages,

@@ -210,7 +210,7 @@ class EventDB:
     def close(self):
         """Close the database connection."""
         self.conn.close()
-        self.logger.info("Database connection closed")
+        self.logger.info("Database connection closed") 
 
     def search_events(self, query, limit=5):
         """

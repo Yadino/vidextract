@@ -45,8 +45,8 @@ README*
 docs/
 
 # Docker and compose files
-Dockerfile*
-docker-compose*
+#Dockerfile*
+#docker-compose*
 
 # Temporary and local files
 tmp/
@@ -60,7 +60,7 @@ output/
 sample vids/
 
 # Project-specific: Model weights (if not needed in container)
-models/*.pt
+# models/*.pt
 
 # Project-specific: Old scripts and backup files
 old/
